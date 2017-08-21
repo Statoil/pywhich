@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+
+#  Copyright (C) 2017  Statoil ASA, Norway.
+#
+#  pywhich is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  pywhich is distributed in the hope that it will be useful, but WITHOUT ANY
+#  WARRANTY; without even the implied warranty of MERCHANTABILITY or
+#  FITNESS FOR A PARTICULAR PURPOSE.
+#
+#  See the GNU General Public License at <http://www.gnu.org/licenses/gpl.html>
+#  for more details.
+
+from __future__ import print_function
+
+import os
+import sys
+import importlib
+
+def get_version(mod):
+    return mod.__version__ if hasattr(mod, '__version__') else ''
+
+def get_path(mod):
+    path = mod.__file__
+    path = os.path.split(path)[0]
+    return path
+
+def get_author(mod):
+    if not hasattr(mod, '__author__'):
+        return ''
+    return '(%s)' % mod.__author__
+
+def pywhich(args):
+    if isinstance(args, str):
+        cmd = args
+    else:
+        cmd = args[0]
+    try:
+        module_ = importlib.import_module(cmd)
+    except ImportError:
+        exit('pywhich: no %s in %s' % (cmd, os.environ.get('PYTHONPATH', '')))
+
+    version = get_version(module_)
+    path = get_path(module_)
+    author = get_author(module_)
+    print('%s %s %s' % (path, version, author))
+
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        exit('Usage: pywhich COMMAND')
+    try:
+        from web_log import log
+        log('pywhich', 'launch', extra_info=sys.argv[1], async=True)
+    except:
+        pass
+    pywhich(sys.argv[1:])
+
