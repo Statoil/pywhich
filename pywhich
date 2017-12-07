@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+#
 #  Copyright (C) 2017  Statoil ASA, Norway.
 #
 #  pywhich is free software: you can redistribute it and/or modify
@@ -16,6 +16,9 @@
 
 from __future__ import print_function
 
+__version__ = '1.0'
+__author__  = 'Software Innovation Bergen, Statoil ASA, PGDR',
+
 import os
 import sys
 import importlib
@@ -25,7 +28,7 @@ def get_version(mod):
 
 def get_path(mod):
     path = mod.__file__
-    path = os.path.split(path)[0]
+    path = os.path.dirname(path)
     return path
 
 def get_author(mod):
@@ -46,15 +49,14 @@ def pywhich(args):
     version = get_version(module_)
     path = get_path(module_)
     author = get_author(module_)
-    print('%s %s %s' % (path, version, author))
+    return '%s %s %s' % (path, version, author)
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        exit('Usage: pywhich COMMAND')
+        exit('Usage: pywhich MODULE')
     try:
         from web_log import log
         log('pywhich', 'launch', extra_info=sys.argv[1], async=True)
     except:
         pass
-    pywhich(sys.argv[1:])
-
+    print(pywhich(sys.argv[1:]))
